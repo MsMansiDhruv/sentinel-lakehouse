@@ -1,0 +1,13 @@
+resources:
+  pipelines:
+    sentinel_orders_pipeline:
+      name: "Sentinel Orders Pipeline - ${bundle.target}"
+
+      catalog: ${var.catalog}
+      schema: silver
+
+      serverless: true
+
+      libraries:
+        - file:
+            path: ../src/pipelines/orders_pipeline.py
