@@ -86,9 +86,9 @@ jobs:
 
       - name: Verify production notebooks
         run: |
-          test -e notebooks/09_incremental_gold_cdf
-          test -e notebooks/10_validate_gold
-          test -e notebooks/11_pipeline_observability
+          test -e notebooks/09_incremental_gold_cdf.ipynb
+          test -e notebooks/10_validate_gold.ipynb
+          test -e notebooks/11_pipeline_observability.ipynb
 
       - name: Validate production DAG
         run: |
@@ -157,6 +157,7 @@ jobs:
           import json
           import os
           import urllib.request
+          import urllib.error
 
           with open("pr_diff.txt", encoding="utf-8") as f:
               diff = f.read()
@@ -281,8 +282,17 @@ jobs:
                   method="POST"
               )
 
-              with urllib.request.urlopen(request, timeout=60) as response:
-                  result = json.loads(response.read())
+              try:
+                  with urllib.request.urlopen(request, timeout=60) as response:
+                      result = json.loads(response.read())
+
+              except urllib.error.HTTPError as exc:
+                  error_body = exc.read().decode("utf-8", errors="replace")
+
+                  print(f"Gemini API HTTP {exc.code}")
+                  print(error_body)
+
+                  raise
 
               review = result["candidates"][0]["content"]["parts"][0]["text"]
 
