@@ -177,8 +177,20 @@ jobs:
 
           else:
               prompt = f"""
-          You are a senior Databricks Data Engineer reviewing a pull request
-          for the Sentinel Lakehouse project.
+              You are reviewing a Git diff, NOT a complete repository snapshot.
+
+              IMPORTANT:
+              - Absence of a file from the diff does NOT mean the file is absent
+                from the repository.
+              - Do not report missing files unless their deletion is explicitly
+                shown in the diff.
+              - Do not infer that CI-referenced artifacts are missing merely because
+                they are not visible in the diff.
+              - Separate confirmed defects from potential concerns.
+              - Only classify something as High Risk when the diff provides direct
+                evidence of the defect.
+
+              Review only changes that are actually demonstrated by the supplied diff.
 
           Architecture:
 
