@@ -37,6 +37,6 @@ jobs:
 
       - name: Verify production notebooks
         run: |
-          test -e notebooks/09_incremental_gold_cdf
-          test -e notebooks/10_validate_gold
-          test -e notebooks/11_pipeline_observability
+          test -e notebooks/09_incremental_gold_cdf.ipynb
+          test -e notebooks/10_validate_gold.ipynb
+          test -e notebooks/11_pipeline_observability.ipynb
