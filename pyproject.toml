@@ -1,0 +1,6 @@
+[tool.ruff]
+target-version = "py311"
+builtins = ["spark"]
+
+[tool.ruff.lint]
+select = ["E", "F"]

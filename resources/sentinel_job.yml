@@ -1,0 +1,30 @@
+resources:
+  jobs:
+    sentinel_production:
+      name: "Sentinel Lakehouse Production - ${bundle.target}"
+      parameters:
+        - name: catalog
+          default: ${var.catalog}
+          
+      tasks:
+        - task_key: silver_pipeline
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.sentinel_orders_pipeline.id}
+
+        - task_key: incremental_gold
+          depends_on:
+            - task_key: silver_pipeline
+          notebook_task:
+            notebook_path: ../notebooks/09_incremental_gold_cdf.ipynb
+
+        - task_key: validate_gold
+          depends_on:
+            - task_key: incremental_gold
+          notebook_task:
+            notebook_path: ../notebooks/10_validate_gold.ipynb
+
+        - task_key: pipeline_observability
+          depends_on:
+            - task_key: validate_gold
+          notebook_task:
+            notebook_path: ../notebooks/11_pipeline_observability.ipynb

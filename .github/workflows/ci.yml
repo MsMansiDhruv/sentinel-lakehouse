@@ -1,0 +1,42 @@
+name: Sentinel CI
+
+on:
+  pull_request:
+    branches:
+      - main
+
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate Python syntax
+        run: |
+          python -m compileall src
+
+      - name: Verify required bundle files
+        run: |
+          test -f databricks.yml
+          test -f resources/sentinel_job.yml
+          test -f resources/sentinel_pipeline.yml
+
+      - name: Verify production notebooks
+        run: |
+          test -e notebooks/09_incremental_gold_cdf.ipynb
+          test -e notebooks/10_validate_gold.ipynb
+          test -e notebooks/11_pipeline_observability.ipynb

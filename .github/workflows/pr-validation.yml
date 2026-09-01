@@ -1,0 +1,397 @@
+name: Sentinel PR Validation
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+
+  # --------------------------------------------------------
+  # 1. CODE QUALITY
+  # --------------------------------------------------------
+  code-quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install validation tools
+        run: |
+          pip install pyyaml ruff bandit
+
+      - name: Validate Python syntax
+        run: |
+          python -m compileall src
+
+      - name: Ruff lint
+        run: |
+          ruff check src
+
+      - name: Security scan
+        run: |
+          bandit -r src
+
+      - name: Validate YAML
+        run: |
+          python - <<'PY'
+          import yaml
+          from pathlib import Path
+
+          files = [
+              Path("databricks.yml"),
+              Path("resources/sentinel_job.yml"),
+              Path("resources/sentinel_pipeline.yml"),
+          ]
+
+          for file in files:
+              with file.open(encoding="utf-8") as f:
+                  yaml.safe_load(f)
+
+              print(f"✓ {file}")
+
+          print("All required YAML files are valid.")
+          PY
+
+
+  # -------------------------------------------------------
+  # 2. SENTINEL ARCHITECTURE CHECKS
+  # -------------------------------------------------------
+  architecture-validation:
+    name: Architecture Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v4
+
+      - name: Verify required files
+        run: |
+          test -f databricks.yml
+          test -f resources/sentinel_job.yml
+          test -f resources/sentinel_pipeline.yml
+          test -f src/pipelines/orders_pipeline.py
+
+      - name: Verify production notebooks
+        run: |
+          test -e notebooks/09_incremental_gold_cdf.ipynb
+          test -e notebooks/10_validate_gold.ipynb
+          test -e notebooks/11_pipeline_observability.ipynb
+
+      - name: Validate production DAG
+        run: |
+          grep -q "silver_pipeline" resources/sentinel_job.yml
+          grep -q "incremental_gold" resources/sentinel_job.yml
+          grep -q "validate_gold" resources/sentinel_job.yml
+          grep -q "pipeline_observability" resources/sentinel_job.yml
+
+      - name: Validate serverless pipeline
+        run: |
+          grep -q "serverless: true" resources/sentinel_pipeline.yml
+
+      - name: Validate catalog configuration
+        run: |
+          grep -q "catalog:" databricks.yml
+          grep -q '\${var.catalog}' resources/sentinel_pipeline.yml
+          grep -q '\${var.catalog}' resources/sentinel_job.yml
+
+      - name: Architecture summary
+        run: |
+          {
+            echo "## Sentinel Architecture Validation"
+            echo ""
+            echo "✓ Bundle configuration found"
+            echo "✓ Lakeflow pipeline definition found"
+            echo "✓ Production DAG structure verified"
+            echo "✓ Serverless pipeline configured"
+            echo "✓ Catalog variable configured"
+            echo "✓ Production validation notebook found"
+            echo "✓ Observability notebook found"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+
+  # -------------------------------------------------------
+  # 3. GEMINI AI CODE REVIEW
+  # -------------------------------------------------------
+  ai-review:
+    name: Gemini AI Review
+    runs-on: ubuntu-latest
+
+    # AI review should not run for untrusted fork PRs because secrets
+    # are intentionally unavailable to those workflows.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build PR diff
+        run: |
+          git diff \
+            "${{ github.event.pull_request.base.sha }}" \
+            "${{ github.event.pull_request.head.sha }}" \
+            > pr_diff.txt
+
+          echo "PR diff size:"
+          wc -c pr_diff.txt
+
+      - name: Review changes with Gemini
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import urllib.request
+          import urllib.error
+
+          with open("pr_diff.txt", encoding="utf-8") as f:
+              diff = f.read()
+
+          # Prevent an unexpectedly huge PR from creating an
+          # unnecessarily large model request.
+          diff = diff[:60000]
+
+          if not diff.strip():
+              review = """## Gemini AI Review
+
+          No code changes were detected in the PR diff.
+
+          **Recommendation:** APPROVE
+          """
+
+          else:
+              prompt = f"""
+              You are reviewing a Git diff, NOT a complete repository snapshot.
+
+              IMPORTANT:
+              - Absence of a file from the diff does NOT mean the file is absent
+                from the repository.
+              - Do not report missing files unless their deletion is explicitly
+                shown in the diff.
+              - Do not infer that CI-referenced artifacts are missing merely because
+                they are not visible in the diff.
+              - Separate confirmed defects from potential concerns.
+              - Only classify something as High Risk when the diff provides direct
+                evidence of the defect.
+
+              Review only changes that are actually demonstrated by the supplied diff.
+
+          Architecture:
+
+          - Databricks
+          - Unity Catalog
+          - Auto Loader
+          - Lakeflow Spark Declarative Pipelines
+          - Expectations and quarantine
+          - AUTO CDC
+          - SCD Type 1
+          - SCD Type 2
+          - Delta Change Data Feed
+          - incremental Gold MERGE
+          - CDF version checkpointing
+          - dimensional Gold model
+          - Lakeflow Jobs
+          - Databricks Declarative Automation Bundles
+          - production validation gates
+          - pipeline observability
+
+          Review ONLY what can reasonably be inferred from the supplied
+          Git diff.
+
+          Pay particular attention to:
+
+          1. correctness
+          2. possible data loss
+          3. duplicate processing
+          4. idempotency
+          5. CDF checkpoint correctness
+          6. MERGE correctness
+          7. schema regressions
+          8. SCD semantics
+          9. data-quality regressions
+          10. hard-coded environment configuration
+          11. security or credential exposure
+          12. observability regressions
+          13. missing validation/tests
+          14. Databricks-specific anti-patterns
+
+          Do not invent problems.
+
+          Distinguish genuine correctness risks from optional improvements.
+
+          Produce concise Markdown in exactly this structure:
+
+          ## Gemini AI Review
+
+          ### Summary
+          Brief description of what changed.
+
+          ### High Risk
+          Findings or "None".
+
+          ### Medium Risk
+          Findings or "None".
+
+          ### Low Risk / Improvements
+          Findings or "None".
+
+          ### Testing Gaps
+          Missing validation or "None identified".
+
+          ### Positive Observations
+          What the change does well.
+
+          ### Recommendation
+          One of:
+          APPROVE
+          APPROVE WITH COMMENTS
+          NEEDS HUMAN ATTENTION
+
+          Pull request diff:
+
+          {diff}
+          """
+
+              model = "gemini-3.6-flash"
+
+              url = (
+                  "https://generativelanguage.googleapis.com/v1beta/models/"
+                  f"{model}:generateContent?key={os.environ['GEMINI_API_KEY']}"
+              )
+
+              body = {
+                  "contents": [
+                      {
+                          "parts": [
+                              {"text": prompt}
+                          ]
+                      }
+                  ],
+                  "generationConfig": {
+                      "temperature": 0.2
+                  }
+              }
+
+              request = urllib.request.Request(
+                  url,
+                  data=json.dumps(body).encode("utf-8"),
+                  headers={"Content-Type": "application/json"},
+                  method="POST"
+              )
+
+              try:
+                  with urllib.request.urlopen(request, timeout=60) as response:
+                      result = json.loads(response.read())
+
+              except urllib.error.HTTPError as exc:
+                  error_body = exc.read().decode("utf-8", errors="replace")
+
+                  print(f"Gemini API HTTP {exc.code}")
+                  print(error_body)
+
+                  raise
+
+              review = result["candidates"][0]["content"]["parts"][0]["text"]
+
+          with open("ai_review.md", "w", encoding="utf-8") as f:
+              f.write(review)
+
+          print(review)
+          PY
+
+      - name: Add AI review to workflow summary
+        run: |
+          cat ai_review.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Publish AI review on pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo "<!-- sentinel-gemini-review -->"
+            cat ai_review.md
+            echo ""
+            echo "---"
+            echo "*Automated advisory review. Human approval is still required.*"
+          } > comment.md
+
+          EXISTING_COMMENT_ID="$(
+            gh api \
+              "repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments" \
+              --paginate \
+              --jq '.[] | select(.body | contains("<!-- sentinel-gemini-review -->")) | .id' \
+              | head -1
+          )"
+
+          if [ -n "$EXISTING_COMMENT_ID" ]; then
+            gh api \
+              --method PATCH \
+              "repos/${{ github.repository }}/issues/comments/$EXISTING_COMMENT_ID" \
+              --field body="$(cat comment.md)"
+          else
+            gh pr comment \
+              "${{ github.event.pull_request.number }}" \
+              --body-file comment.md
+          fi
+
+
+  # -------------------------------------------------------
+  # 4. FINAL PR SUMMARY
+  # -------------------------------------------------------
+  pr-summary:
+    name: PR Validation Summary
+    runs-on: ubuntu-latest
+    needs:
+      - code-quality
+      - architecture-validation
+      - ai-review
+
+    if: always()
+
+    steps:
+      - name: Generate summary
+        env:
+          CODE_RESULT: ${{ needs.code-quality.result }}
+          ARCH_RESULT: ${{ needs.architecture-validation.result }}
+          AI_RESULT: ${{ needs.ai-review.result }}
+
+        run: |
+          {
+            echo "# Sentinel PR Validation"
+            echo ""
+            echo "| Check | Result |"
+            echo "|---|---|"
+            echo "| Code Quality | $CODE_RESULT |"
+            echo "| Architecture Validation | $ARCH_RESULT |"
+            echo "| Gemini AI Review | $AI_RESULT |"
+            echo ""
+            echo "Human reviewer approval is required before merge."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ "$CODE_RESULT" != "success" ]; then
+            exit 1
+          fi
+
+          if [ "$ARCH_RESULT" != "success" ]; then
+            exit 1
+          fi
+
+          # AI is advisory. A Gemini outage/quota issue should not
+          # make deterministic engineering validation meaningless.
+          exit 0
