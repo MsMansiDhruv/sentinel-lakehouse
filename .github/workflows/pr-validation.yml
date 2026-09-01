@@ -103,8 +103,9 @@ jobs:
 
       - name: Validate catalog configuration
         run: |
-          grep -q '\${var.catalog}' databricks.yml
+          grep -q "catalog:" databricks.yml
           grep -q '\${var.catalog}' resources/sentinel_pipeline.yml
+          grep -q '\${var.catalog}' resources/sentinel_job.yml
 
       - name: Architecture summary
         run: |
