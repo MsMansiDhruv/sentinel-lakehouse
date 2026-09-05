@@ -30,7 +30,15 @@ jobs:
 
       - name: Install validation tools
         run: |
-          pip install pyyaml ruff bandit
+          pip install pyyaml ruff bandit pytest build
+
+      - name: Build Python package
+        run: |
+          python -m build --wheel
+
+      - name: Install Python package
+        run: |
+          pip install dist/*.whl
 
       - name: Validate Python syntax
         run: |
@@ -39,6 +47,10 @@ jobs:
       - name: Ruff lint
         run: |
           ruff check src
+
+      - name: Run unit tests
+        run: |
+          pytest
 
       - name: Security scan
         run: |
