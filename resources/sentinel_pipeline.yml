@@ -6,8 +6,15 @@ resources:
       catalog: ${var.catalog}
       schema: silver
 
+      configuration:
+        sentinel.catalog: ${var.catalog}
+
       serverless: true
 
       libraries:
         - file:
             path: ../src/pipelines/orders_pipeline.py
+
+      environment:
+        dependencies:
+          - ../dist/*.whl
