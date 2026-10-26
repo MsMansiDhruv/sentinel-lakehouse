@@ -1,10 +1,34 @@
-# Sentinel Lakehouse
+<div align="center">
 
-> A production-style Databricks lakehouse demonstrating incremental ingestion, data quality, CDC, dimensional modeling, performance engineering, observability, governance, packaging, and CI/CD.
+# 🛡️ Sentinel Lakehouse
+### Enterprise Medallion Lakehouse on Databricks & Delta Lake
 
-Sentinel Lakehouse is an end-to-end data engineering project built on Databricks to model how a commerce data platform can evolve from raw file ingestion into a governed, production-ready analytical lakehouse.
+[![Architecture](https://img.shields.io/badge/Architecture-Medallion%20Lakehouse-2EE6A7?style=for-the-badge&logo=databricks&logoColor=white)](https://github.com/MsMansiDhruv/sentinel-lakehouse)
+[![Runtime](https://img.shields.io/badge/Runtime-Databricks%20%7C%20Spark%203.5+-FF9B4A?style=for-the-badge&logo=apachespark&logoColor=white)](https://spark.apache.org/)
+[![Storage](https://img.shields.io/badge/Storage-Delta%20Lake%20%26%20CDF-2EE6A7?style=for-the-badge&logo=delta&logoColor=white)](https://delta.io/)
+[![Governance](https://img.shields.io/badge/Governance-Unity%20Catalog-0E1726?style=for-the-badge&logo=databricks&logoColor=2EE6A7)](https://www.databricks.com/product/unity-catalog)
+[![Data Quality](https://img.shields.io/badge/Quality-Lakeflow%20%26%20GX-FF9B4A?style=for-the-badge&logo=pytest&logoColor=white)](https://greatexpectations.io/)
+[![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions%20%26%20DABs-1F2937?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/MsMansiDhruv/sentinel-lakehouse/actions)
 
-Rather than focusing only on moving data from Bronze to Gold, the project addresses the engineering concerns that appear in real production systems: schema evolution, malformed records, data quality enforcement, late-arriving events, historical state tracking, incremental processing, idempotency, performance, deployment automation, testing, and operational visibility.
+<p align="center">
+  <a href="#-architecture">Architecture</a> •
+  <a href="#-what-the-project-demonstrates">Core Concepts</a> •
+  <a href="#-data-quality-framework">Quality Framework</a> •
+  <a href="#cdc-and-historical-state">CDC & SCD</a> •
+  <a href="#incremental-gold-processing-with-change-data-feed">Incremental Gold</a> •
+  <a href="#performance-engineering">Performance</a> •
+  <a href="#production-orchestration">Orchestration</a> •
+  <a href="#repository-structure">Structure</a>
+</p>
+
+</div>
+
+---
+
+> [!IMPORTANT]
+> **Production Blueprint**: An end-to-end Databricks lakehouse implementing incremental Auto Loader ingestion, Lakeflow Expectations with quarantine routing, Delta Change Data Feed (CDF), SCD Type 1 & 2 dimensional tables, Liquid Clustering performance benchmarks, and automated DABs deployment.
+
+Sentinel Lakehouse models how an enterprise commerce data platform evolves from raw file ingestion into a governed, production-ready analytical lakehouse. Rather than simply copying Bronze to Gold, the project addresses real-world systems concerns: schema evolution, malformed records, late-arriving events, historical state preservation, idempotent MERGEs, and deployment automation.
 
 ---
 
