@@ -4,13 +4,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, List, Optional
+from typing import Any, List
 
 
 class GatingPolicy(str, Enum):
     """Execution policy when upstream data arrival or window completeness fails."""
 
-    FAIL_FAST = "FAIL_FAST"  # Abort pipeline immediately to prevent publishing corrupted metrics
+    FAIL_FAST = "FAIL_FAST"  # Abort pipeline execution to prevent publishing corrupted metrics
     DEGRADED_WITH_MARKER = "DEGRADED_WITH_MARKER"  # Proceed, but annotate data with DQ confidence flags
     QUARANTINE_WINDOW = "QUARANTINE_WINDOW"  # Route incomplete window rows to a quarantine table
     PROCEED_WITH_WARNING = "PROCEED_WITH_WARNING"  # Log warning to audit ledger and proceed
@@ -54,6 +54,7 @@ class GoldQualityContract:
     source_table: str
     time_column: str = "order_date"
     partition_column: str = "order_date"
+    primary_keys: List[str] = field(default_factory=lambda: ["order_date"])
     cadence: PartitionCadence = PartitionCadence.DAILY
     sla_grace_period_hours: int = 4
     min_expected_rows: int = 1

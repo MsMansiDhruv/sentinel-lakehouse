@@ -89,3 +89,24 @@ def test_no_late_partitions_produces_zero_blast_radius():
     assert blast_radius.invalidated_target_dates == []
     assert blast_radius.actual_pruned_scan_days == 0
     assert blast_radius.scan_reduction_pct == 100.0
+
+
+def test_blast_radius_sql_merge_generation_with_multi_entity_keys():
+    """Verify MERGE query joins across all primary keys for wide/entity schemas."""
+    contract = GoldQualityContract(
+        target_table="gold_customer_rolling_metrics",
+        source_table="silver_orders",
+        partition_column="order_date",
+        primary_keys=["order_date", "customer_id", "store_id"],
+    )
+    reconciler = RetroactiveReconciler(contract)
+    blast_radius = reconciler.calculate_blast_radius(
+        late_partitions=["2026-10-30"],
+        as_of_date="2026-10-31",
+    )
+    merge_sql = reconciler.generate_delta_merge_sql(blast_radius)
+
+    assert "target.order_date = source.order_date" in merge_sql
+    assert "target.customer_id = source.customer_id" in merge_sql
+    assert "target.store_id = source.store_id" in merge_sql
+

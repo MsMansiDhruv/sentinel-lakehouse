@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta
 from typing import Any, Dict, List, Optional, Set
 
-from sentinel.gold.config import GoldQualityContract, PartitionCadence, SlaStatus
+from sentinel.gold.config import GoldQualityContract, SlaStatus
 
 
 @dataclass
@@ -59,7 +59,6 @@ class DeltaMetadataSlaGate:
         """
         target_str = str(target_date)
         present_set = set(str(p) for p in available_partitions)
-        row_counts = partition_row_counts or {}
 
         eval_ts = evaluation_timestamp or datetime.now()
         target_dt = datetime.strptime(target_str, "%Y-%m-%d").date()
@@ -101,25 +100,28 @@ class DeltaMetadataSlaGate:
                 },
             )
 
-        row_count = row_counts.get(target_str, 1)
-        if row_count < self.contract.min_expected_rows:
-            return SlaCheckResult(
-                target_date=target_str,
-                status=SlaStatus.VOLUME_ANOMALY,
-                is_breached=True,
-                expected_partitions=expected_partitions,
-                present_partitions=present_partitions,
-                missing_partitions=[],
-                row_count=row_count,
-                arrival_timestamp=commit_timestamp,
-                deadline_timestamp=deadline_ts,
-                metadata_bytes_inspected=meta_bytes,
-                estimated_data_bytes_skipped=est_data_bytes,
-                dbu_savings_pct=dbu_savings,
-                details={
-                    "reason": f"Row count {row_count} below minimum {self.contract.min_expected_rows}"
-                },
-            )
+        # Evaluate volume threshold if row count stats are provided
+        row_count = 0
+        if partition_row_counts is not None and target_str in partition_row_counts:
+            row_count = partition_row_counts[target_str]
+            if row_count < self.contract.min_expected_rows:
+                return SlaCheckResult(
+                    target_date=target_str,
+                    status=SlaStatus.VOLUME_ANOMALY,
+                    is_breached=True,
+                    expected_partitions=expected_partitions,
+                    present_partitions=present_partitions,
+                    missing_partitions=[],
+                    row_count=row_count,
+                    arrival_timestamp=commit_timestamp,
+                    deadline_timestamp=deadline_ts,
+                    metadata_bytes_inspected=meta_bytes,
+                    estimated_data_bytes_skipped=est_data_bytes,
+                    dbu_savings_pct=dbu_savings,
+                    details={
+                        "reason": f"Row count {row_count} below minimum {self.contract.min_expected_rows}"
+                    },
+                )
 
         # Arrived and meets volume threshold
         if commit_timestamp and commit_timestamp > deadline_ts:

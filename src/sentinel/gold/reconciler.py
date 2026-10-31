@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta
 from typing import Any, Dict, List, Optional, Set
 
-from sentinel.gold.config import GoldQualityContract, RollingWindowSpec
+from sentinel.gold.config import GoldQualityContract
 
 
 @dataclass
@@ -152,17 +152,20 @@ class RetroactiveReconciler:
     ) -> str:
         """Generate the partition-pruned Delta Lake MERGE statement for idempotent reconciliation."""
         target_tbl = self.contract.target_table
-        part_col = self.contract.partition_column
-        merge_pred = blast_radius.target_merge_predicate
+        part_pred = blast_radius.target_merge_predicate
+
+        join_conditions = [part_pred]
+        for key in self.contract.primary_keys:
+            join_conditions.append(f"target.{key} = source.{key}")
+
+        on_clause = "\n   AND ".join(join_conditions)
 
         return f"""-- Sentinel Gold Automated Blast-Radius Reconciliation MERGE
 -- Optimized partition pruning: scanning {blast_radius.actual_pruned_scan_days} days instead of {blast_radius.estimated_full_table_scan_days} days
 -- Scan cost reduction: {blast_radius.scan_reduction_pct}%
 MERGE INTO {target_tbl} AS target
 USING {source_view_name} AS source
-ON {merge_pred}
-   AND target.{part_col} = source.{part_col}
-   AND target.metric_name = source.metric_name
+ON {on_clause}
 WHEN MATCHED THEN
   UPDATE SET *
 WHEN NOT MATCHED THEN

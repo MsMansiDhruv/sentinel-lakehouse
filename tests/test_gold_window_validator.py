@@ -79,7 +79,7 @@ def test_missing_day_in_seven_day_window_degraded_mode():
 
 
 def test_fail_fast_policy_raises_error():
-    """FAIL_FAST policy must abort pipeline when window is incomplete."""
+    """FAIL_FAST policy must abort pipeline when raise_on_failure is True."""
     spec = RollingWindowSpec(
         name="7d_revenue",
         window_size_days=7,
@@ -95,6 +95,30 @@ def test_fail_fast_policy_raises_error():
             target_date="2026-10-31",
             window_spec=spec,
             available_partitions=partitions,
+            raise_on_failure=True,
         )
 
     assert "Rolling window '7d_revenue' for 2026-10-31 is incomplete!" in str(exc_info.value)
+
+
+def test_fail_fast_returns_abort_action_without_raising():
+    """FAIL_FAST policy returns FAIL_FAST_ABORT action when raise_on_failure is False."""
+    spec = RollingWindowSpec(
+        name="7d_revenue",
+        window_size_days=7,
+        metric_name="rolling_revenue_7d",
+        aggregation_expr="sum(amount)",
+    )
+    validator = RollingWindowValidator(policy=GatingPolicy.FAIL_FAST)
+
+    partitions = {"2026-10-30", "2026-10-31"}
+
+    result = validator.evaluate_window(
+        target_date="2026-10-31",
+        window_spec=spec,
+        available_partitions=partitions,
+        raise_on_failure=False,
+    )
+
+    assert not result.is_complete
+    assert result.gating_action == "FAIL_FAST_ABORT"

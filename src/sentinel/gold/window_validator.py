@@ -49,6 +49,7 @@ class RollingWindowValidator:
         target_date: str | date,
         window_spec: RollingWindowSpec,
         available_partitions: Set[str] | List[str],
+        raise_on_failure: bool = False,
     ) -> WindowValidationResult:
         """Evaluate a rolling window interval for contiguity.
 
@@ -56,6 +57,7 @@ class RollingWindowValidator:
             target_date: Target calculation date (e.g., '2026-10-31').
             window_spec: RollingWindowSpec defining window size and metric rules.
             available_partitions: Set of available partition dates in Silver/source.
+            raise_on_failure: Whether to immediately raise IncompleteWindowError on FAIL_FAST.
         """
         target_str = str(target_date)
         present_set = set(str(p) for p in available_partitions)
@@ -90,11 +92,13 @@ class RollingWindowValidator:
         if is_complete:
             gating_action = "PROCEED_CLEAN"
         elif self.policy == GatingPolicy.FAIL_FAST:
-            raise IncompleteWindowError(
-                f"Rolling window '{window_spec.name}' for {target_str} is incomplete! "
-                f"Completeness score: {completeness_score:.2f} < {window_spec.min_completeness_ratio:.2f}. "
-                f"Missing intervals: {missing_intervals}"
-            )
+            gating_action = "FAIL_FAST_ABORT"
+            if raise_on_failure:
+                raise IncompleteWindowError(
+                    f"Rolling window '{window_spec.name}' for {target_str} is incomplete! "
+                    f"Completeness score: {completeness_score:.2f} < {window_spec.min_completeness_ratio:.2f}. "
+                    f"Missing intervals: {missing_intervals}"
+                )
         elif self.policy == GatingPolicy.QUARANTINE_WINDOW:
             gating_action = "ROUTE_TO_QUARANTINE"
         elif self.policy == GatingPolicy.DEGRADED_WITH_MARKER:
