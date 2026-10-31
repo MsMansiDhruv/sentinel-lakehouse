@@ -1,0 +1,332 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 660" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#080C14"/>
+      <stop offset="50%" stop-color="#0D1322"/>
+      <stop offset="100%" stop-color="#070A10"/>
+    </linearGradient>
+
+    <!-- Card Backgrounds -->
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#161F33" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#0F172A" stop-opacity="0.85"/>
+    </linearGradient>
+
+    <!-- Gold Accelerator Highlight Grad -->
+    <linearGradient id="goldAccelGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B"/>
+      <stop offset="50%" stop-color="#1E1E38"/>
+      <stop offset="100%" stop-color="#171A2E"/>
+    </linearGradient>
+
+    <!-- Neon Accents -->
+    <linearGradient id="bronzeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#D97706"/>
+    </linearGradient>
+    <linearGradient id="silverGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="100%" stop-color="#818CF8"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#10B981"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <linearGradient id="purpleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#A855F7"/>
+      <stop offset="100%" stop-color="#6366F1"/>
+    </linearGradient>
+
+    <!-- Glow Filter -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="glowSubtle" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Grid Pattern -->
+    <pattern id="techGrid" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#1E293B" stroke-width="0.75" stroke-opacity="0.6"/>
+    </pattern>
+
+    <style>
+      .flow-line {
+        stroke-dasharray: 6 6;
+        animation: flowDash 1.2s linear infinite;
+      }
+      .pulse-beacon {
+        animation: pulseBeacon 2s ease-in-out infinite;
+      }
+      .radar-sweep {
+        animation: radarRotate 4s linear infinite;
+        transform-origin: 600px 330px;
+      }
+      .stream-particle {
+        animation: streamMove 3s ease-in-out infinite;
+      }
+      @keyframes flowDash {
+        from { stroke-dashoffset: 24; }
+        to { stroke-dashoffset: 0; }
+      }
+      @keyframes pulseBeacon {
+        0%, 100% { opacity: 0.3; transform: scale(0.95); }
+        50% { opacity: 1; transform: scale(1.08); filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.8)); }
+      }
+      @keyframes streamMove {
+        0% { opacity: 0; transform: translateY(0); }
+        50% { opacity: 1; }
+        100% { opacity: 0; transform: translateY(40px); }
+      }
+      .font-tech {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      }
+    </style>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect width="1200" height="660" rx="16" fill="url(#bgGrad)"/>
+  <rect width="1200" height="660" rx="16" fill="url(#techGrid)"/>
+  <rect width="1200" height="660" rx="16" fill="none" stroke="#1E293B" stroke-width="1.5"/>
+
+  <!-- Top Header Banner -->
+  <g transform="translate(60, 35)">
+    <!-- Header Badge -->
+    <rect x="0" y="0" width="1080" height="52" rx="10" fill="#0F172A" stroke="#334155" stroke-width="1.2"/>
+    <circle cx="28" cy="26" r="6" fill="#10B981" class="pulse-beacon"/>
+    <text x="44" y="31" fill="#F8FAFC" font-size="16" font-weight="700" class="font-tech" letter-spacing="0.5">
+      SENTINEL LAKEHOUSE: MEDALLION ARCHITECTURE + ZERO-OVERHEAD GOLD ACCELERATOR
+    </text>
+    <rect x="850" y="14" width="210" height="24" rx="12" fill="#1E293B" stroke="#475569" stroke-width="0.8"/>
+    <text x="955" y="30" text-anchor="middle" fill="#38BDF8" font-size="11" font-weight="600" class="font-tech">
+      DATABRICKS + DELTA LAKE
+    </text>
+  </g>
+
+  <!-- ==================== TIER 1: BRONZE INGESTION ==================== -->
+  <g transform="translate(60, 120)">
+    <!-- Main Card -->
+    <rect x="0" y="0" width="230" height="480" rx="14" fill="url(#cardGrad)" stroke="#F59E0B" stroke-width="1.5" stroke-opacity="0.7"/>
+    <!-- Header Pill -->
+    <rect x="18" y="18" width="194" height="34" rx="8" fill="#78350F" fill-opacity="0.4" stroke="#F59E0B" stroke-width="1"/>
+    <circle cx="34" cy="35" r="5" fill="#F59E0B"/>
+    <text x="48" y="40" fill="#FDE68A" font-size="13" font-weight="700" class="font-tech">BRONZE TIER (RAW)</text>
+
+    <!-- Sub-components -->
+    <g transform="translate(18, 70)">
+      <rect x="0" y="0" width="194" height="74" rx="8" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+      <text x="14" y="26" fill="#F8FAFC" font-size="12" font-weight="600" class="font-tech">Auto Loader Ingestion</text>
+      <text x="14" y="46" fill="#94A3B8" font-size="10" class="font-tech">Incremental file discovery</text>
+      <text x="14" y="60" fill="#94A3B8" font-size="10" class="font-tech">Unity Catalog Volumes</text>
+    </g>
+
+    <g transform="translate(18, 160)">
+      <rect x="0" y="0" width="194" height="74" rx="8" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+      <text x="14" y="26" fill="#F8FAFC" font-size="12" font-weight="600" class="font-tech">Schema Evolution</text>
+      <text x="14" y="46" fill="#94A3B8" font-size="10" class="font-tech">Automatic inference</text>
+      <text x="14" y="60" fill="#94A3B8" font-size="10" class="font-tech">_rescued_data column</text>
+    </g>
+
+    <g transform="translate(18, 250)">
+      <rect x="0" y="0" width="194" height="90" rx="8" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+      <text x="14" y="24" fill="#F8FAFC" font-size="12" font-weight="600" class="font-tech">bronze_orders</text>
+      <text x="14" y="44" fill="#94A3B8" font-size="10" class="font-tech">Append-only Delta log</text>
+      <text x="14" y="60" fill="#94A3B8" font-size="10" class="font-tech">Source file lineage</text>
+      <text x="14" y="76" fill="#F59E0B" font-size="10" font-weight="600" class="font-tech">Ingestion Timestamp</text>
+    </g>
+
+    <!-- Stat Footer -->
+    <rect x="18" y="420" width="194" height="40" rx="6" fill="#0B1329" stroke="#1E293B" stroke-width="1"/>
+    <text x="115" y="445" text-anchor="middle" fill="#CBD5E1" font-size="10.5" class="font-tech">
+      ⚡ Low-Latency Auto Stream
+    </text>
+  </g>
+
+  <!-- Flow 1: Bronze -> Silver -->
+  <g>
+    <path d="M 290 340 L 340 340" fill="none" stroke="#F59E0B" stroke-width="2.5" class="flow-line"/>
+    <polygon points="345,340 337,335 337,345" fill="#F59E0B"/>
+  </g>
+
+  <!-- ==================== TIER 2: SILVER QUALITY ==================== -->
+  <g transform="translate(345, 120)">
+    <!-- Main Card -->
+    <rect x="0" y="0" width="240" height="480" rx="14" fill="url(#cardGrad)" stroke="#38BDF8" stroke-width="1.5" stroke-opacity="0.8"/>
+    <!-- Header Pill -->
+    <rect x="18" y="18" width="204" height="34" rx="8" fill="#0369A1" fill-opacity="0.4" stroke="#38BDF8" stroke-width="1"/>
+    <circle cx="34" cy="35" r="5" fill="#38BDF8"/>
+    <text x="48" y="40" fill="#BAE6FD" font-size="13" font-weight="700" class="font-tech">SILVER TIER (CLEANSED)</text>
+
+    <!-- Sub-components -->
+    <g transform="translate(18, 70)">
+      <rect x="0" y="0" width="204" height="74" rx="8" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+      <text x="14" y="26" fill="#F8FAFC" font-size="12" font-weight="600" class="font-tech">Type Validation (try_cast)</text>
+      <text x="14" y="46" fill="#94A3B8" font-size="10" class="font-tech">Business contract rules</text>
+      <text x="14" y="60" fill="#94A3B8" font-size="10" class="font-tech">Numeric &amp; timestamp clean</text>
+    </g>
+
+    <g transform="translate(18, 160)">
+      <rect x="0" y="0" width="204" height="96" rx="8" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+      <text x="14" y="24" fill="#F8FAFC" font-size="12" font-weight="600" class="font-tech">Lakeflow Expectations</text>
+      <rect x="14" y="34" width="80" height="20" rx="4" fill="#10B981" fill-opacity="0.2"/>
+      <text x="54" y="48" text-anchor="middle" fill="#34D399" font-size="9.5" font-weight="600">Valid &gt; Silver</text>
+      <rect x="104" y="34" width="86" height="20" rx="4" fill="#EF4444" fill-opacity="0.2"/>
+      <text x="147" y="48" text-anchor="middle" fill="#F87171" font-size="9.5" font-weight="600">Fail &gt; Quarantine</text>
+      <text x="14" y="74" fill="#94A3B8" font-size="10" class="font-tech">Zero silent drops policy</text>
+      <text x="14" y="88" fill="#94A3B8" font-size="10" class="font-tech">Failure metadata tracked</text>
+    </g>
+
+    <g transform="translate(18, 272)">
+      <rect x="0" y="0" width="204" height="74" rx="8" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+      <text x="14" y="24" fill="#F8FAFC" font-size="12" font-weight="600" class="font-tech">Delta Change Data Feed</text>
+      <text x="14" y="44" fill="#94A3B8" font-size="10" class="font-tech">CDF: table_changes()</text>
+      <text x="14" y="60" fill="#38BDF8" font-size="10" font-weight="600" class="font-tech">Row-level insert/update ops</text>
+    </g>
+
+    <!-- Stat Footer -->
+    <rect x="18" y="420" width="204" height="40" rx="6" fill="#0B1329" stroke="#1E293B" stroke-width="1"/>
+    <text x="120" y="445" text-anchor="middle" fill="#CBD5E1" font-size="10.5" class="font-tech">
+      🔒 Governed Row-Level Contract
+    </text>
+  </g>
+
+  <!-- Flow 2: Silver -> Gold Accelerator -->
+  <g>
+    <path d="M 585 340 L 635 340" fill="none" stroke="#38BDF8" stroke-width="2.5" class="flow-line"/>
+    <polygon points="640,340 632,335 632,345" fill="#38BDF8"/>
+  </g>
+
+  <!-- ==================== TIER 3: SENTINEL GOLD ACCELERATOR (NEW) ==================== -->
+  <g transform="translate(640, 110)">
+    <!-- Glow Box Behind Accelerator -->
+    <rect x="-4" y="-4" width="268" height="508" rx="18" fill="none" stroke="#10B981" stroke-width="1" opacity="0.4" filter="url(#glow)"/>
+    <!-- Main Card -->
+    <rect x="0" y="0" width="260" height="500" rx="14" fill="url(#goldAccelGrad)" stroke="#10B981" stroke-width="2"/>
+    
+    <!-- Top New Feature Badge -->
+    <rect x="65" y="-12" width="130" height="22" rx="11" fill="#10B981" filter="url(#glowSubtle)"/>
+    <text x="130" y="3" text-anchor="middle" fill="#064E3B" font-size="10" font-weight="800" class="font-tech" letter-spacing="1">
+      ★ ZERO-OVERHEAD DQ
+    </text>
+
+    <!-- Header Pill -->
+    <rect x="18" y="22" width="224" height="34" rx="8" fill="#064E3B" fill-opacity="0.5" stroke="#10B981" stroke-width="1.2"/>
+    <circle cx="34" cy="39" r="6" fill="#10B981" class="pulse-beacon"/>
+    <text x="48" y="44" fill="#A7F3D0" font-size="12.5" font-weight="800" class="font-tech">SENTINEL GOLD ACCELERATOR</text>
+
+    <!-- Module 1: Zero-Scan SLA Gate -->
+    <g transform="translate(16, 70)">
+      <rect x="0" y="0" width="228" height="88" rx="8" fill="#0F172A" stroke="#10B981" stroke-width="1" stroke-opacity="0.8"/>
+      <text x="12" y="22" fill="#34D399" font-size="11.5" font-weight="700" class="font-tech">1. Delta Metadata SLA Gate</text>
+      <text x="12" y="40" fill="#E2E8F0" font-size="10" class="font-tech">• Zero-Scan _delta_log inspection</text>
+      <text x="12" y="55" fill="#E2E8F0" font-size="10" class="font-tech">• Partition SLA arrival check</text>
+      <rect x="12" y="63" width="204" height="18" rx="4" fill="#064E3B" fill-opacity="0.4"/>
+      <text x="114" y="76" text-anchor="middle" fill="#6EE7B7" font-size="9" font-weight="700">⚡ 99.9% DBU Cost Savings vs Scan</text>
+    </g>
+
+    <!-- Module 2: Rolling Window Contiguity -->
+    <g transform="translate(16, 170)">
+      <rect x="0" y="0" width="228" height="92" rx="8" fill="#0F172A" stroke="#334155" stroke-width="1"/>
+      <text x="12" y="22" fill="#38BDF8" font-size="11.5" font-weight="700" class="font-tech">2. Rolling Window Contiguity</text>
+      <text x="12" y="40" fill="#CBD5E1" font-size="10" class="font-tech">• [t-W, t] interval completeness</text>
+      <text x="12" y="55" fill="#CBD5E1" font-size="10" class="font-tech">• Injects _dq_completeness_score</text>
+      <text x="12" y="70" fill="#CBD5E1" font-size="10" class="font-tech">• Non-breaking quality markers</text>
+      <text x="12" y="84" fill="#FBBF24" font-size="9" font-weight="600">Gating: DEGRADED / FAIL_FAST</text>
+    </g>
+
+    <!-- Module 3: Blast Radius Reconciler -->
+    <g transform="translate(16, 274)">
+      <rect x="0" y="0" width="228" height="96" rx="8" fill="#0F172A" stroke="#A855F7" stroke-width="1"/>
+      <text x="12" y="22" fill="#C084FC" font-size="11.5" font-weight="700" class="font-tech">3. Blast-Radius Reconciler</text>
+      <text x="12" y="40" fill="#E2E8F0" font-size="10" class="font-tech">• Detects late arrivals: t_late</text>
+      <text x="12" y="55" fill="#E2E8F0" font-size="10" class="font-tech">• Bounds blast: [t_late, t_late+W-1]</text>
+      <text x="12" y="70" fill="#E2E8F0" font-size="10" class="font-tech">• Targeted Delta MERGE in-place</text>
+      <rect x="12" y="76" width="204" height="15" rx="3" fill="#581C87" fill-opacity="0.4"/>
+      <text x="114" y="88" text-anchor="middle" fill="#E9D5FF" font-size="8.5" font-weight="700">Skips 98%+ of Historical Data</text>
+    </g>
+
+    <!-- Module 4: Audit Ledger -->
+    <g transform="translate(16, 382)">
+      <rect x="0" y="0" width="228" height="50" rx="8" fill="#0F172A" stroke="#334155" stroke-width="1"/>
+      <text x="12" y="20" fill="#F8FAFC" font-size="11" font-weight="600" class="font-tech">4. _sentinel_gold_quality_ledger</text>
+      <text x="12" y="38" fill="#94A3B8" font-size="9.5" class="font-tech">Audit run history, breaches &amp; DBU savings</text>
+    </g>
+
+    <!-- Stat Footer -->
+    <rect x="16" y="444" width="228" height="42" rx="6" fill="#064E3B" fill-opacity="0.3" stroke="#10B981" stroke-width="1"/>
+    <text x="130" y="462" text-anchor="middle" fill="#34D399" font-size="10" font-weight="700" class="font-tech">
+      Zero SaaS Fees • 100% Native PySpark
+    </text>
+    <text x="130" y="476" text-anchor="middle" fill="#A7F3D0" font-size="9" class="font-tech">
+      Replaces $50k/yr Marketplace Tools
+    </text>
+  </g>
+
+  <!-- Flow 3: Gold Accelerator -> Gold Tables -->
+  <g>
+    <path d="M 900 340 L 950 340" fill="none" stroke="#10B981" stroke-width="2.5" class="flow-line"/>
+    <polygon points="955,340 947,335 947,345" fill="#10B981"/>
+  </g>
+
+  <!-- ==================== TIER 4: GOLD TABLES & CONSUMPTION ==================== -->
+  <g transform="translate(955, 120)">
+    <!-- Main Card -->
+    <rect x="0" y="0" width="185" height="480" rx="14" fill="url(#cardGrad)" stroke="#10B981" stroke-width="1.5" stroke-opacity="0.7"/>
+    <!-- Header Pill -->
+    <rect x="14" y="18" width="157" height="34" rx="8" fill="#064E3B" fill-opacity="0.4" stroke="#10B981" stroke-width="1"/>
+    <circle cx="28" cy="35" r="5" fill="#10B981"/>
+    <text x="40" y="40" fill="#A7F3D0" font-size="12" font-weight="700" class="font-tech">GOLD ANALYTICS</text>
+
+    <!-- Sub-components -->
+    <g transform="translate(14, 70)">
+      <rect x="0" y="0" width="157" height="74" rx="8" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+      <text x="10" y="24" fill="#F8FAFC" font-size="11.5" font-weight="600" class="font-tech">fact_orders</text>
+      <text x="10" y="44" fill="#94A3B8" font-size="9.5" class="font-tech">Liquid Clustering</text>
+      <text x="10" y="60" fill="#94A3B8" font-size="9.5" class="font-tech">Z-Order optimized</text>
+    </g>
+
+    <g transform="translate(14, 160)">
+      <rect x="0" y="0" width="157" height="74" rx="8" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+      <text x="10" y="24" fill="#F8FAFC" font-size="11.5" font-weight="600" class="font-tech">Rolling Aggregations</text>
+      <text x="10" y="44" fill="#94A3B8" font-size="9.5" class="font-tech">7d / 30d Revenue KPIs</text>
+      <text x="10" y="60" fill="#10B981" font-size="9.5" font-weight="600" class="font-tech">100% Healed Windows</text>
+    </g>
+
+    <g transform="translate(14, 250)">
+      <rect x="0" y="0" width="157" height="74" rx="8" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+      <text x="10" y="24" fill="#F8FAFC" font-size="11.5" font-weight="600" class="font-tech">SCD 1 &amp; 2 Dimensions</text>
+      <text x="10" y="44" fill="#94A3B8" font-size="9.5" class="font-tech">dim_customers (SCD2)</text>
+      <text x="10" y="60" fill="#94A3B8" font-size="9.5" class="font-tech">dim_products (SCD1)</text>
+    </g>
+
+    <g transform="translate(14, 340)">
+      <rect x="0" y="0" width="157" height="70" rx="8" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+      <text x="10" y="22" fill="#F8FAFC" font-size="11" font-weight="600" class="font-tech">Downstream Consumers</text>
+      <text x="10" y="40" fill="#38BDF8" font-size="9.5" class="font-tech">• PowerBI / Tableau</text>
+      <text x="10" y="55" fill="#38BDF8" font-size="9.5" class="font-tech">• ML Feature Store</text>
+    </g>
+
+    <!-- Stat Footer -->
+    <rect x="14" y="420" width="157" height="40" rx="6" fill="#0B1329" stroke="#1E293B" stroke-width="1"/>
+    <text x="92" y="445" text-anchor="middle" fill="#CBD5E1" font-size="10.5" class="font-tech">
+      📊 Production Certified
+    </text>
+  </g>
+
+  <!-- Cross-Cutting Governance Banner at Bottom -->
+  <g transform="translate(60, 615)">
+    <rect x="0" y="0" width="1080" height="32" rx="8" fill="#0B1120" stroke="#1E293B" stroke-width="1"/>
+    <text x="540" y="21" text-anchor="middle" fill="#94A3B8" font-size="11" class="font-tech">
+      GOVERNANCE &amp; SECURITY: <tspan fill="#38BDF8" font-weight="600">Unity Catalog</tspan> • 3-Level Namespace • Row/Column ACLs • System Table Lineage • Automated DABs Deployment
+    </text>
+  </g>
+</svg>
