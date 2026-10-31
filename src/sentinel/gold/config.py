@@ -10,10 +10,14 @@ from typing import Any, List
 class GatingPolicy(str, Enum):
     """Execution policy when upstream data arrival or window completeness fails."""
 
-    FAIL_FAST = "FAIL_FAST"  # Abort pipeline execution to prevent publishing corrupted metrics
-    DEGRADED_WITH_MARKER = "DEGRADED_WITH_MARKER"  # Proceed, but annotate data with DQ confidence flags
-    QUARANTINE_WINDOW = "QUARANTINE_WINDOW"  # Route incomplete window rows to a quarantine table
-    PROCEED_WITH_WARNING = "PROCEED_WITH_WARNING"  # Log warning to audit ledger and proceed
+    # Abort pipeline execution to prevent publishing corrupted metrics
+    FAIL_FAST = "FAIL_FAST"
+    # Proceed, but annotate data with DQ confidence flags
+    DEGRADED_WITH_MARKER = "DEGRADED_WITH_MARKER"
+    # Route incomplete window rows to a quarantine table
+    QUARANTINE_WINDOW = "QUARANTINE_WINDOW"
+    # Log warning to audit ledger and proceed
+    PROCEED_WITH_WARNING = "PROCEED_WITH_WARNING"
 
 
 class SlaStatus(str, Enum):
@@ -43,7 +47,7 @@ class RollingWindowSpec:
     aggregation_expr: str
     time_column: str = "order_date"
     partition_column: str = "order_date"
-    min_completeness_ratio: float = 1.0  # Require 100% contiguity by default
+    min_completeness_ratio: float = 1.0
 
 
 @dataclass

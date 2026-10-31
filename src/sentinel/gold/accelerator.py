@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import date
 from typing import Any, Dict, List, Optional, Set
 
@@ -10,7 +10,6 @@ from sentinel.gold.config import (
     GatingPolicy,
     GoldQualityContract,
     RollingWindowSpec,
-    SlaStatus,
 )
 from sentinel.gold.ledger import QualityAuditLedger
 from sentinel.gold.reconciler import BlastRadiusResult, RetroactiveReconciler
@@ -91,6 +90,7 @@ class SentinelGoldAccelerator:
                 target_date=target_str,
                 window_spec=spec,
                 available_partitions=available_partitions,
+                raise_on_failure=False,
             )
             window_results[spec.name] = w_res
             merged_quality_markers.update(w_res.quality_markers)
@@ -130,10 +130,14 @@ class SentinelGoldAccelerator:
         if sla_res.is_breached or not all_windows_valid:
             if self.contract.gating_policy == GatingPolicy.FAIL_FAST:
                 can_proceed = False
-                summary_msg = "Execution halted due to FAIL_FAST policy on SLA or window breach."
+                summary_msg = (
+                    "Execution halted due to FAIL_FAST policy on SLA or window breach."
+                )
             elif self.contract.gating_policy == GatingPolicy.DEGRADED_WITH_MARKER:
                 can_proceed = True
-                summary_msg = "Proceeding in DEGRADED mode with injected quality markers."
+                summary_msg = (
+                    "Proceeding in DEGRADED mode with injected quality markers."
+                )
             elif self.contract.gating_policy == GatingPolicy.QUARANTINE_WINDOW:
                 can_proceed = True
                 summary_msg = "Proceeding with incomplete window routed to quarantine."

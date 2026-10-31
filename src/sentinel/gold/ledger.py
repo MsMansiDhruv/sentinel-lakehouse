@@ -1,4 +1,4 @@
-"""Audit ledger for recording Gold data quality evaluations, SLA events, and reconciliation metrics."""
+"""Audit ledger for recording Gold quality evaluations, SLA events, and reconciliations."""
 
 from __future__ import annotations
 
@@ -33,7 +33,7 @@ class QualityAuditEvent:
 
 
 class QualityAuditLedger:
-    """Maintains an append-only audit trail of Gold data quality checks and DBU optimizations.
+    """Maintains an audit trail of Gold data quality checks and DBU optimizations.
 
     Provides governance observability in Unity Catalog under `_sentinel_gold_quality_ledger`.
     """
@@ -125,7 +125,9 @@ class QualityAuditLedger:
 
         sla_events = [e for e in self.events if e.event_type == "SLA_EVALUATION"]
         window_events = [e for e in self.events if e.event_type == "WINDOW_COMPLETENESS"]
-        recon_events = [e for e in self.events if e.event_type == "RETROACTIVE_RECONCILIATION"]
+        recon_events = [
+            e for e in self.events if e.event_type == "RETROACTIVE_RECONCILIATION"
+        ]
 
         avg_score = (
             sum(e.completeness_score for e in window_events) / len(window_events)

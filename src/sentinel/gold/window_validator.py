@@ -32,13 +32,12 @@ class WindowValidationResult:
 
 
 class RollingWindowValidator:
-    """Validates the contiguity of rolling windows to prevent publishing corrupted aggregates.
+    """Validates the contiguity of rolling windows.
 
-    In Medallion architectures, rolling window metrics (e.g. 7-day revenue, 30-day active users)
-    depend on a contiguous historical interval. If one day in the window is missing or delayed,
+    In Medallion architectures, rolling window metrics (e.g. 7-day revenue)
+    depend on contiguous intervals. If one day in the window is missing,
     standard jobs compute partial aggregations with missing denominators.
-    This validator detects gaps, calculates completeness ratios, and annotates Gold records
-    with non-breaking quality markers.
+    This validator detects gaps and annotates Gold records with quality markers.
     """
 
     def __init__(self, policy: GatingPolicy = GatingPolicy.DEGRADED_WITH_MARKER):
@@ -55,9 +54,9 @@ class RollingWindowValidator:
 
         Args:
             target_date: Target calculation date (e.g., '2026-10-31').
-            window_spec: RollingWindowSpec defining window size and metric rules.
-            available_partitions: Set of available partition dates in Silver/source.
-            raise_on_failure: Whether to immediately raise IncompleteWindowError on FAIL_FAST.
+            window_spec: RollingWindowSpec defining window size and rules.
+            available_partitions: Set of partition dates in Silver/source.
+            raise_on_failure: Whether to raise IncompleteWindowError on FAIL_FAST.
         """
         target_str = str(target_date)
         present_set = set(str(p) for p in available_partitions)
@@ -95,9 +94,10 @@ class RollingWindowValidator:
             gating_action = "FAIL_FAST_ABORT"
             if raise_on_failure:
                 raise IncompleteWindowError(
-                    f"Rolling window '{window_spec.name}' for {target_str} is incomplete! "
-                    f"Completeness score: {completeness_score:.2f} < {window_spec.min_completeness_ratio:.2f}. "
-                    f"Missing intervals: {missing_intervals}"
+                    f"Rolling window '{window_spec.name}' for {target_str} "
+                    f"is incomplete! Score: {completeness_score:.2f} < "
+                    f"{window_spec.min_completeness_ratio:.2f}. "
+                    f"Missing: {missing_intervals}"
                 )
         elif self.policy == GatingPolicy.QUARANTINE_WINDOW:
             gating_action = "ROUTE_TO_QUARANTINE"

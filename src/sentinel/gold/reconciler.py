@@ -11,7 +11,7 @@ from sentinel.gold.config import GoldQualityContract
 
 @dataclass
 class BlastRadiusResult:
-    """The calculated impact radius of late-arriving partitions on Gold rolling windows."""
+    """The calculated impact radius of late-arriving partitions on Gold windows."""
 
     late_partitions: List[str]
     max_window_days: int
@@ -26,13 +26,13 @@ class BlastRadiusResult:
 
 
 class RetroactiveReconciler:
-    """Calculates the blast radius of delayed data and orchestrates targeted Delta Lake reconciliations.
+    """Calculates late data blast radius and orchestrates Delta reconciliations.
 
-    Unlike expensive third-party tools that merely sound an alert and force data engineers
+    Unlike expensive third-party tools that merely sound an alert and force engineers
     to run costly full-table backfills, the RetroactiveReconciler:
     1. Identifies which historical rolling windows were invalidated by late data.
     2. Bounds the blast radius to strictly [t_late, t_late + W - 1].
-    3. Produces partition-pruned Delta MERGE statements that skip 95-99% of historical data files.
+    3. Produces partition-pruned Delta MERGE statements skipping 95-99% of data.
     """
 
     def __init__(self, contract: GoldQualityContract):
@@ -44,12 +44,12 @@ class RetroactiveReconciler:
         as_of_date: Optional[str | date] = None,
         full_table_retention_days: int = 365,
     ) -> BlastRadiusResult:
-        """Compute the invalidated target dates and the surgical Delta MERGE boundary.
+        """Compute the invalidated target dates and Delta MERGE boundary.
 
         Args:
-            late_partitions: List of partition date strings 'YYYY-MM-DD' that arrived late.
-            as_of_date: Current date boundary beyond which future dates are not recomputed.
-            full_table_retention_days: Baseline retention days for calculating scan reduction.
+            late_partitions: Partition date strings 'YYYY-MM-DD' that arrived late.
+            as_of_date: Current date boundary beyond which dates are not recomputed.
+            full_table_retention_days: Baseline retention days for scan reduction.
         """
         if not late_partitions:
             return BlastRadiusResult(
@@ -62,7 +62,7 @@ class RetroactiveReconciler:
                 estimated_full_table_scan_days=full_table_retention_days,
                 actual_pruned_scan_days=0,
                 scan_reduction_pct=100.0,
-                details={"message": "No late partitions detected; zero reconciliation needed."},
+                details={"message": "No late partitions detected; zero backfill needed."},
             )
 
         as_of_dt = (
@@ -81,8 +81,7 @@ class RetroactiveReconciler:
         late_dts = [datetime.strptime(p, "%Y-%m-%d").date() for p in late_partitions]
 
         for p_dt in late_dts:
-            # A late partition p_dt invalidates target windows from p_dt to p_dt + (max_w - 1)
-            # bounded by current as_of_date
+            # A late partition p_dt invalidates target windows [p_dt, p_dt + max_w - 1]
             for offset in range(max_w):
                 target_cand = p_dt + timedelta(days=offset)
                 if target_cand <= as_of_dt:
@@ -102,7 +101,7 @@ class RetroactiveReconciler:
                 estimated_full_table_scan_days=full_table_retention_days,
                 actual_pruned_scan_days=0,
                 scan_reduction_pct=100.0,
-                details={"message": "Late partitions are beyond the as-of evaluation date."},
+                details={"message": "Late partitions are beyond the as-of date."},
             )
 
         # Source data required: earliest invalidated date minus max_w days
@@ -150,7 +149,7 @@ class RetroactiveReconciler:
         blast_radius: BlastRadiusResult,
         source_view_name: str = "recomputed_staged_slice",
     ) -> str:
-        """Generate the partition-pruned Delta Lake MERGE statement for idempotent reconciliation."""
+        """Generate partition-pruned Delta MERGE statement for reconciliation."""
         target_tbl = self.contract.target_table
         part_pred = blast_radius.target_merge_predicate
 
@@ -161,7 +160,7 @@ class RetroactiveReconciler:
         on_clause = "\n   AND ".join(join_conditions)
 
         return f"""-- Sentinel Gold Automated Blast-Radius Reconciliation MERGE
--- Optimized partition pruning: scanning {blast_radius.actual_pruned_scan_days} days instead of {blast_radius.estimated_full_table_scan_days} days
+-- Optimized partition pruning: scanning {blast_radius.actual_pruned_scan_days} days
 -- Scan cost reduction: {blast_radius.scan_reduction_pct}%
 MERGE INTO {target_tbl} AS target
 USING {source_view_name} AS source

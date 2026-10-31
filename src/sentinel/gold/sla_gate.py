@@ -32,9 +32,8 @@ class DeltaMetadataSlaGate:
     """Evaluates partition arrival SLAs using zero-scan Delta Lake metadata.
 
     Instead of executing heavy 'SELECT count(*) FROM table WHERE partition = ...'
-    queries that scan entire Parquet files (incurring heavy DBU costs like Databricks
-    Lakehouse Monitoring or marketplace tools), this gate inspects Delta table metadata,
-    transaction commit logs, and file statistics.
+    queries that scan entire Parquet files, this gate inspects Delta table metadata,
+    commit logs, and file statistics.
     """
 
     def __init__(self, contract: GoldQualityContract):
@@ -52,8 +51,8 @@ class DeltaMetadataSlaGate:
 
         Args:
             target_date: Date string 'YYYY-MM-DD' or date object to evaluate.
-            available_partitions: Set or list of partition dates present in Delta metadata.
-            partition_row_counts: Optional mapping of partition date to row count from Delta stats.
+            available_partitions: Set or list of partition dates in Delta metadata.
+            partition_row_counts: Optional mapping of partition date to row count.
             commit_timestamp: Actual commit timestamp from Delta transaction log.
             evaluation_timestamp: Current pipeline execution timestamp.
         """
@@ -119,7 +118,10 @@ class DeltaMetadataSlaGate:
                     estimated_data_bytes_skipped=est_data_bytes,
                     dbu_savings_pct=dbu_savings,
                     details={
-                        "reason": f"Row count {row_count} below minimum {self.contract.min_expected_rows}"
+                        "reason": (
+                            f"Row count {row_count} below minimum "
+                            f"{self.contract.min_expected_rows}"
+                        )
                     },
                 )
 
