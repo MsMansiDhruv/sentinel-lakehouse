@@ -103,12 +103,23 @@ class SentinelContractParser:
     @classmethod
     def load_yaml(cls, yaml_content_or_path: Union[str, Path]) -> List[GoldQualityContract]:
         """Load and parse contracts from a YAML string or file path."""
-        p = Path(yaml_content_or_path)
-        if p.exists() and p.is_file():
-            with open(p, "r", encoding="utf-8") as f:
+        data = None
+        if isinstance(yaml_content_or_path, Path):
+            with open(yaml_content_or_path, "r", encoding="utf-8") as f:
                 data = yaml.safe_load(f)
+        elif isinstance(yaml_content_or_path, str):
+            if "\n" not in yaml_content_or_path and len(yaml_content_or_path) < 255:
+                p = Path(yaml_content_or_path)
+                try:
+                    if p.is_file():
+                        with open(p, "r", encoding="utf-8") as f:
+                            data = yaml.safe_load(f)
+                except OSError:
+                    pass
+            if data is None:
+                data = yaml.safe_load(yaml_content_or_path)
         else:
-            data = yaml.safe_load(str(yaml_content_or_path))
+            raise ContractParsingError("Input must be a YAML string or Path.")
 
         if not isinstance(data, dict):
             raise ContractParsingError("YAML root must be a dictionary.")
