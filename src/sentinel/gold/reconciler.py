@@ -62,7 +62,9 @@ class RetroactiveReconciler:
                 estimated_full_table_scan_days=full_table_retention_days,
                 actual_pruned_scan_days=0,
                 scan_reduction_pct=100.0,
-                details={"message": "No late partitions detected; zero backfill needed."},
+                details={
+                    "message": "No late partitions detected; zero backfill needed."
+                },
             )
 
         as_of_dt = (
@@ -113,7 +115,9 @@ class RetroactiveReconciler:
 
         # Construct optimized Delta MERGE predicate
         if len(invalidated_strs) == 1:
-            merge_pred = f"target.{self.contract.partition_column} = '{invalidated_strs[0]}'"
+            merge_pred = (
+                f"target.{self.contract.partition_column} = '{invalidated_strs[0]}'"
+            )
         else:
             merge_pred = (
                 f"target.{self.contract.partition_column} >= '{invalidated_strs[0]}' "
@@ -122,7 +126,8 @@ class RetroactiveReconciler:
 
         pruned_days = len(invalidated_strs)
         scan_reduction = round(
-            ((full_table_retention_days - pruned_days) / full_table_retention_days) * 100.0,
+            ((full_table_retention_days - pruned_days) / full_table_retention_days)
+            * 100.0,
             2,
         )
 

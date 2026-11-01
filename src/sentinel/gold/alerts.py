@@ -57,7 +57,9 @@ class AlertDispatcher:
         self.active_incidents: Dict[str, IncidentRecord] = {}
         self.sent_payloads: List[Dict[str, Any]] = []
 
-    def _incident_key(self, target_table: str, target_date: str, incident_type: str) -> str:
+    def _incident_key(
+        self, target_table: str, target_date: str, incident_type: str
+    ) -> str:
         return f"{target_table}::{target_date}::{incident_type}"
 
     def build_slack_block_kit_card(
@@ -81,13 +83,20 @@ class AlertDispatcher:
             {"type": "mrkdwn", "text": f"*Target Table:*\n`{table_name}`"},
             {"type": "mrkdwn", "text": f"*Partition Date:*\n`{target_date}`"},
             {"type": "mrkdwn", "text": f"*Severity:*\n*{severity.value}*"},
-            {"type": "mrkdwn", "text": f"*Timestamp:*\n{datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}"},
+            {
+                "type": "mrkdwn",
+                "text": f"*Timestamp:*\n{datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}",
+            },
         ]
 
         blocks = [
             {
                 "type": "header",
-                "text": {"type": "plain_text", "text": f"🛡️ Sentinel Alert: {title}", "emoji": True},
+                "text": {
+                    "type": "plain_text",
+                    "text": f"🛡️ Sentinel Alert: {title}",
+                    "emoji": True,
+                },
             },
             {
                 "type": "section",
@@ -98,13 +107,15 @@ class AlertDispatcher:
         ]
 
         if details and "merge_sql" in details:
-            blocks.append({
-                "type": "section",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": f"*Automated Delta MERGE Healing Query:*\n```{details['merge_sql']}```",
-                },
-            })
+            blocks.append(
+                {
+                    "type": "section",
+                    "text": {
+                        "type": "mrkdwn",
+                        "text": f"*Automated Delta MERGE Healing Query:*\n```{details['merge_sql']}```",
+                    },
+                }
+            )
 
         return {"attachments": [{"color": color, "blocks": blocks}]}
 
@@ -127,7 +138,12 @@ class AlertDispatcher:
                         "type": "AdaptiveCard",
                         "version": "1.4",
                         "body": [
-                            {"type": "TextBlock", "text": f"Sentinel Alert: {title}", "weight": "Bolder", "size": "Medium"},
+                            {
+                                "type": "TextBlock",
+                                "text": f"Sentinel Alert: {title}",
+                                "weight": "Bolder",
+                                "size": "Medium",
+                            },
                             {"type": "TextBlock", "text": message, "wrap": True},
                             {
                                 "type": "FactSet",
@@ -207,7 +223,9 @@ class AlertDispatcher:
         self.sent_payloads.append(payload)
 
         # Send to webhook if provided
-        if webhook_url and (webhook_url.startswith("https://") or webhook_url.startswith("http://")):
+        if webhook_url and (
+            webhook_url.startswith("https://") or webhook_url.startswith("http://")
+        ):
             try:
                 req = urllib.request.Request(
                     webhook_url,
@@ -250,7 +268,9 @@ class AlertDispatcher:
         )
         self.sent_payloads.append(res_payload)
 
-        if webhook_url and (webhook_url.startswith("https://") or webhook_url.startswith("http://")):
+        if webhook_url and (
+            webhook_url.startswith("https://") or webhook_url.startswith("http://")
+        ):
             try:
                 req = urllib.request.Request(
                     webhook_url,

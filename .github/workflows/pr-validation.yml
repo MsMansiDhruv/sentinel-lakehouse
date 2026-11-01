@@ -42,15 +42,19 @@ jobs:
 
       - name: Validate Python syntax
         run: |
-          python -m compileall src
+          python -m compileall src tests
 
       - name: Ruff lint
         run: |
-          ruff check src
+          ruff check src tests
+
+      - name: Ruff format check
+        run: |
+          ruff format --check src tests
 
       - name: Run unit tests
         run: |
-          pytest
+          pytest -v
 
       - name: Security scan
         run: |

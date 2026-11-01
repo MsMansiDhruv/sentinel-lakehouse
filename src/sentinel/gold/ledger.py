@@ -15,7 +15,9 @@ class QualityAuditEvent:
     event_id: str
     target_table: str
     target_date: str
-    event_type: str  # 'SLA_EVALUATION', 'WINDOW_COMPLETENESS', 'RETROACTIVE_RECONCILIATION'
+    event_type: (
+        str  # 'SLA_EVALUATION', 'WINDOW_COMPLETENESS', 'RETROACTIVE_RECONCILIATION'
+    )
     status: str
     completeness_score: float
     is_breached: bool
@@ -124,7 +126,9 @@ class QualityAuditLedger:
             return {"total_events": 0, "status": "NO_ACTIVITY"}
 
         sla_events = [e for e in self.events if e.event_type == "SLA_EVALUATION"]
-        window_events = [e for e in self.events if e.event_type == "WINDOW_COMPLETENESS"]
+        window_events = [
+            e for e in self.events if e.event_type == "WINDOW_COMPLETENESS"
+        ]
         recon_events = [
             e for e in self.events if e.event_type == "RETROACTIVE_RECONCILIATION"
         ]

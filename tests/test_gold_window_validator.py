@@ -98,7 +98,9 @@ def test_fail_fast_policy_raises_error():
             raise_on_failure=True,
         )
 
-    assert "Rolling window '7d_revenue' for 2026-10-31 is incomplete!" in str(exc_info.value)
+    assert "Rolling window '7d_revenue' for 2026-10-31 is incomplete!" in str(
+        exc_info.value
+    )
 
 
 def test_fail_fast_returns_abort_action_without_raising():

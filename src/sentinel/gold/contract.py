@@ -79,7 +79,9 @@ class SentinelContractParser:
                         aggregation_expr=w.get("aggregation_expr", "count(1)"),
                         time_column=w.get("time_column", time_col),
                         partition_column=w.get("partition_column", partition_col),
-                        min_completeness_ratio=float(w.get("min_completeness_ratio", 1.0)),
+                        min_completeness_ratio=float(
+                            w.get("min_completeness_ratio", 1.0)
+                        ),
                     )
                 )
 
@@ -101,7 +103,9 @@ class SentinelContractParser:
         return contracts
 
     @classmethod
-    def load_yaml(cls, yaml_content_or_path: Union[str, Path]) -> List[GoldQualityContract]:
+    def load_yaml(
+        cls, yaml_content_or_path: Union[str, Path]
+    ) -> List[GoldQualityContract]:
         """Load and parse contracts from a YAML string or file path."""
         data = None
         if isinstance(yaml_content_or_path, Path):
