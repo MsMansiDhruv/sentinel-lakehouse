@@ -1,6 +1,6 @@
 """Unit tests for DeltaMetadataSlaGate."""
 
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from sentinel.gold.config import GoldQualityContract, SlaStatus
 from sentinel.gold.sla_gate import DeltaMetadataSlaGate

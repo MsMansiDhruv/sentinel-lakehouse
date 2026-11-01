@@ -80,7 +80,8 @@ class DeltaMetadataProfiler:
         """
         # Filter out target date from historical baseline if present
         history_values = [
-            count for p_date, count in historical_partition_counts.items()
+            count
+            for p_date, count in historical_partition_counts.items()
             if p_date != target_date and count > 0
         ]
 
@@ -104,7 +105,9 @@ class DeltaMetadataProfiler:
             )
 
         mean_val = sum(history_values) / len(history_values)
-        variance = sum((x - mean_val) ** 2 for x in history_values) / len(history_values)
+        variance = sum((x - mean_val) ** 2 for x in history_values) / len(
+            history_values
+        )
         std_val = math.sqrt(variance)
 
         if std_val == 0.0:
@@ -161,7 +164,9 @@ class DeltaMetadataProfiler:
         is_fragmented = file_count > 10 and avg_mb < min_file_size_threshold_mb
 
         if is_fragmented:
-            action = f"OPTIMIZE {self.target_table} WHERE partition = '{partition_date}'"
+            action = (
+                f"OPTIMIZE {self.target_table} WHERE partition = '{partition_date}'"
+            )
         else:
             action = "HEALTHY"
 
@@ -198,9 +203,7 @@ class DeltaMetadataProfiler:
 
         meta_bytes = 20 * 1024
         est_data_bytes = max(total_size_bytes, 100 * 1024 * 1024)
-        savings_pct = round(
-            ((est_data_bytes - meta_bytes) / est_data_bytes) * 100.0, 2
-        )
+        savings_pct = round(((est_data_bytes - meta_bytes) / est_data_bytes) * 100.0, 2)
 
         return MetadataProfileReport(
             target_table=self.target_table,

@@ -71,7 +71,10 @@ def test_blast_radius_sql_merge_generation():
     merge_sql = reconciler.generate_delta_merge_sql(blast_radius)
 
     assert "MERGE INTO gold_rolling_metrics AS target" in merge_sql
-    assert "target.order_date >= '2026-10-25' AND target.order_date <= '2026-10-31'" in merge_sql
+    assert (
+        "target.order_date >= '2026-10-25' AND target.order_date <= '2026-10-31'"
+        in merge_sql
+    )
     assert "target.order_date = source.order_date" in merge_sql
     assert "WHEN MATCHED THEN" in merge_sql
     assert "WHEN NOT MATCHED THEN" in merge_sql
@@ -109,4 +112,3 @@ def test_blast_radius_sql_merge_generation_with_multi_entity_keys():
     assert "target.order_date = source.order_date" in merge_sql
     assert "target.customer_id = source.customer_id" in merge_sql
     assert "target.store_id = source.store_id" in merge_sql
-

@@ -85,4 +85,6 @@ def test_malformed_yaml_raises_contract_parsing_error():
     with pytest.raises(ContractParsingError) as exc_info:
         SentinelContractParser.load_yaml(bad_yaml)
 
-    assert "missing required target_table or source_table" in str(exc_info.value).lower()
+    assert (
+        "missing required target_table or source_table" in str(exc_info.value).lower()
+    )

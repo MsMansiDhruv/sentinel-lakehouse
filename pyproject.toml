@@ -6,7 +6,18 @@ build-backend = "setuptools.build_meta"
 name = "sentinel-lakehouse"
 version = "0.1.0"
 description = "Production-style Databricks Lakehouse engineering project"
-requires-python = ">=3.11"
+requires-python = ">=3.10"
+dependencies = [
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.1.0",
+    "bandit>=1.7.0",
+    "build>=1.0.0",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
