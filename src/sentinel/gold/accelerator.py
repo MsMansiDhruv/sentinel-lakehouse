@@ -9,7 +9,6 @@ from typing import Any, Dict, List, Optional, Set
 from sentinel.gold.config import (
     GatingPolicy,
     GoldQualityContract,
-    RollingWindowSpec,
 )
 from sentinel.gold.ledger import QualityAuditLedger
 from sentinel.gold.reconciler import BlastRadiusResult, RetroactiveReconciler
