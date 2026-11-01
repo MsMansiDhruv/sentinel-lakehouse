@@ -1,0 +1,199 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 480" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgRecon" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#080D1A"/>
+      <stop offset="50%" stop-color="#0E172B"/>
+      <stop offset="100%" stop-color="#080C16"/>
+    </linearGradient>
+
+    <linearGradient id="latePulseGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EF4444"/>
+      <stop offset="100%" stop-color="#DC2626"/>
+    </linearGradient>
+
+    <linearGradient id="blastGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.35"/>
+      <stop offset="50%" stop-color="#10B981" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#06B6D4" stop-opacity="0.35"/>
+    </linearGradient>
+
+    <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <style>
+      .pulse-late {
+        animation: pulseLate 1.8s ease-in-out infinite;
+      }
+      .sweep-beam {
+        animation: scanSweep 3s ease-in-out infinite;
+      }
+      .dash-flow {
+        stroke-dasharray: 4 4;
+        animation: dashMove 1s linear infinite;
+      }
+      @keyframes pulseLate {
+        0%, 100% { transform: scale(1); filter: drop-shadow(0 0 4px #EF4444); }
+        50% { transform: scale(1.08); filter: drop-shadow(0 0 14px #F87171); }
+      }
+      @keyframes scanSweep {
+        0% { transform: translateX(0); opacity: 0.2; }
+        50% { opacity: 0.8; }
+        100% { transform: translateX(540px); opacity: 0.2; }
+      }
+      @keyframes dashMove {
+        from { stroke-dashoffset: 16; }
+        to { stroke-dashoffset: 0; }
+      }
+      .font-sans {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="480" rx="14" fill="url(#bgRecon)" stroke="#1E293B" stroke-width="1.5"/>
+
+  <!-- Title & Subtitle -->
+  <g transform="translate(40, 30)">
+    <rect x="0" y="0" width="920" height="46" rx="8" fill="#0F172A" stroke="#334155" stroke-width="1"/>
+    <circle cx="24" cy="23" r="5" fill="#10B981"/>
+    <text x="38" y="28" fill="#F8FAFC" font-size="14" font-weight="700" class="font-sans">
+      RETROACTIVE BLAST-RADIUS RECONCILIATION: SOLVING LATE DATA IN ROLLING WINDOWS
+    </text>
+    <rect x="760" y="11" width="145" height="24" rx="6" fill="#1E293B"/>
+    <text x="832" y="27" text-anchor="middle" fill="#38BDF8" font-size="10.5" font-weight="600" class="font-sans">
+      TARGETED DELTA MERGE
+    </text>
+  </g>
+
+  <!-- Timeline Container -->
+  <g transform="translate(60, 105)">
+    <!-- Main Timeline Bar -->
+    <rect x="0" y="30" width="880" height="6" rx="3" fill="#334155"/>
+
+    <!-- Date Tick 1: Oct 24 -->
+    <g transform="translate(50, 0)">
+      <circle cx="0" cy="33" r="7" fill="#475569"/>
+      <text x="0" y="15" text-anchor="middle" fill="#94A3B8" font-size="11" font-weight="600" class="font-sans">Oct 24</text>
+      <text x="0" y="60" text-anchor="middle" fill="#64748B" font-size="10" class="font-sans">Unaffected</text>
+    </g>
+
+    <!-- Date Tick 2: Oct 25 (LATE PARTITION ARRIVES!) -->
+    <g transform="translate(160, 0)">
+      <circle cx="0" cy="33" r="10" fill="url(#latePulseGrad)" class="pulse-late"/>
+      <text x="0" y="15" text-anchor="middle" fill="#F87171" font-size="11.5" font-weight="800" class="font-sans">Oct 25</text>
+      <rect x="-42" y="50" width="84" height="22" rx="4" fill="#7F1D1D" stroke="#EF4444" stroke-width="0.8"/>
+      <text x="0" y="65" text-anchor="middle" fill="#FECACA" font-size="9.5" font-weight="700" class="font-sans">
+        LATE DATA ⚠️
+      </text>
+    </g>
+
+    <!-- Blast Radius Highlighting Bracket -->
+    <g transform="translate(160, 85)">
+      <!-- Blast Radius Bounding Box -->
+      <rect x="-10" y="0" width="560" height="90" rx="10" fill="url(#blastGrad)" stroke="#10B981" stroke-width="1.5" stroke-dasharray="6 3"/>
+      
+      <!-- Scanning Laser Beam -->
+      <line x1="0" y1="0" x2="0" y2="90" stroke="#38BDF8" stroke-width="3" filter="url(#neonGlow)" class="sweep-beam"/>
+
+      <text x="270" y="30" text-anchor="middle" fill="#F0FDF4" font-size="13" font-weight="800" class="font-sans">
+        CALCULATED BLAST RADIUS SPAN: [ t_late, t_late + (W - 1) ]
+      </text>
+      <text x="270" y="52" text-anchor="middle" fill="#6EE7B7" font-size="11" class="font-sans">
+        7 Historical Gold Windows Invalidate Automatically: Oct 25 ➔ Oct 31
+      </text>
+      <text x="270" y="74" text-anchor="middle" fill="#93C5FD" font-size="10.5" font-weight="600" class="font-sans">
+        Surgically Recomputes &amp; MERGEs Only This 7-Day Window Slice
+      </text>
+    </g>
+
+    <!-- Intermediate Date Ticks -->
+    <g transform="translate(250, 0)">
+      <circle cx="0" cy="33" r="7" fill="#F59E0B"/>
+      <text x="0" y="15" text-anchor="middle" fill="#FDE68A" font-size="11" class="font-sans">Oct 26</text>
+    </g>
+    <g transform="translate(340, 0)">
+      <circle cx="0" cy="33" r="7" fill="#F59E0B"/>
+      <text x="0" y="15" text-anchor="middle" fill="#FDE68A" font-size="11" class="font-sans">Oct 27</text>
+    </g>
+    <g transform="translate(430, 0)">
+      <circle cx="0" cy="33" r="7" fill="#F59E0B"/>
+      <text x="0" y="15" text-anchor="middle" fill="#FDE68A" font-size="11" class="font-sans">Oct 28</text>
+    </g>
+    <g transform="translate(520, 0)">
+      <circle cx="0" cy="33" r="7" fill="#F59E0B"/>
+      <text x="0" y="15" text-anchor="middle" fill="#FDE68A" font-size="11" class="font-sans">Oct 29</text>
+    </g>
+    <g transform="translate(610, 0)">
+      <circle cx="0" cy="33" r="7" fill="#F59E0B"/>
+      <text x="0" y="15" text-anchor="middle" fill="#FDE68A" font-size="11" class="font-sans">Oct 30</text>
+    </g>
+
+    <!-- Date Tick 7: Oct 31 (Today's Boundary) -->
+    <g transform="translate(700, 0)">
+      <circle cx="0" cy="33" r="9" fill="#10B981" class="pulse-late"/>
+      <text x="0" y="15" text-anchor="middle" fill="#6EE7B7" font-size="11.5" font-weight="800" class="font-sans">Oct 31</text>
+      <rect x="-40" y="50" width="80" height="22" rx="4" fill="#064E3B" stroke="#10B981" stroke-width="0.8"/>
+      <text x="0" y="65" text-anchor="middle" fill="#A7F3D0" font-size="9.5" font-weight="700" class="font-sans">
+        TODAY (As-Of)
+      </text>
+    </g>
+
+    <!-- Future Date Tick: Nov 01 -->
+    <g transform="translate(810, 0)">
+      <circle cx="0" cy="33" r="7" fill="#334155"/>
+      <text x="0" y="15" text-anchor="middle" fill="#64748B" font-size="11" class="font-sans">Nov 01</text>
+      <text x="0" y="60" text-anchor="middle" fill="#475569" font-size="10" class="font-sans">Future</text>
+    </g>
+  </g>
+
+  <!-- Efficiency Comparison Cards at Bottom -->
+  <g transform="translate(60, 310)">
+    <!-- Traditional Backfill Card (Bad / Costly) -->
+    <g transform="translate(0, 0)">
+      <rect x="0" y="0" width="420" height="135" rx="10" fill="#111827" stroke="#EF4444" stroke-width="1.2"/>
+      <rect x="16" y="14" width="130" height="22" rx="4" fill="#7F1D1D" fill-opacity="0.4"/>
+      <text x="81" y="29" text-anchor="middle" fill="#FCA5A5" font-size="11" font-weight="700" class="font-sans">
+        ❌ FULL TABLE RELOAD
+      </text>
+      <text x="16" y="56" fill="#E2E8F0" font-size="12" font-weight="600" class="font-sans">
+        Scans all 365 Days of Historical Data
+      </text>
+      <text x="16" y="78" fill="#94A3B8" font-size="10.5" class="font-sans">
+        • Overwrites entire Gold table partition-by-partition
+      </text>
+      <text x="16" y="96" fill="#94A3B8" font-size="10.5" class="font-sans">
+        • Burns massive cluster DBUs &amp; causes read lock contention
+      </text>
+      <text x="16" y="116" fill="#F87171" font-size="11" font-weight="700" class="font-sans">
+        Scan Cost: 100% (High Compute Waste)
+      </text>
+    </g>
+
+    <!-- Sentinel Targeted Reconciler Card (Good / Zero Overhead) -->
+    <g transform="translate(460, 0)">
+      <rect x="0" y="0" width="420" height="135" rx="10" fill="#0B1C1D" stroke="#10B981" stroke-width="1.5"/>
+      <rect x="16" y="14" width="180" height="22" rx="4" fill="#064E3B" fill-opacity="0.6"/>
+      <text x="106" y="29" text-anchor="middle" fill="#6EE7B7" font-size="11" font-weight="700" class="font-sans">
+        ✔ SENTINEL BLAST RECONCILER
+      </text>
+      <text x="16" y="56" fill="#F0FDF4" font-size="12" font-weight="600" class="font-sans">
+        Scans ONLY 7 Days (Targeted Partition Pruning)
+      </text>
+      <text x="16" y="78" fill="#A7F3D0" font-size="10.5" class="font-sans">
+        • Issues surgical Delta MERGE into Gold in-place
+      </text>
+      <text x="16" y="96" fill="#A7F3D0" font-size="10.5" class="font-sans">
+        • Skips 358 unaffected days completely (zero I/O)
+      </text>
+      <text x="16" y="116" fill="#34D399" font-size="12" font-weight="800" class="font-sans">
+        ⚡ 98.1% Scan Reduction • Near-Zero DBU Cost
+      </text>
+    </g>
+  </g>
+</svg>
