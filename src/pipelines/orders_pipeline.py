@@ -61,16 +61,13 @@ def bronze_orders():
 )
 def orders_typed():
 
-    return (
-        spark.readStream.table("bronze_orders")
-        .withColumn("quantity_clean", F.expr("try_cast(quantity AS INT)"))
-        .withColumn("unit_price_clean", F.expr("try_cast(unit_price AS DECIMAL(18,2))"))
-        .withColumn(
-            "total_amount_clean", F.expr("try_cast(total_amount AS DECIMAL(18,2))")
-        )
-        .withColumn(
-            "order_timestamp_clean", F.expr("try_cast(order_timestamp AS TIMESTAMP)")
-        )
+    return spark.readStream.table("bronze_orders").withColumns(
+        {
+            "quantity_clean": F.expr("try_cast(quantity AS INT)"),
+            "unit_price_clean": F.expr("try_cast(unit_price AS DECIMAL(18,2))"),
+            "total_amount_clean": F.expr("try_cast(total_amount AS DECIMAL(18,2))"),
+            "order_timestamp_clean": F.expr("try_cast(order_timestamp AS TIMESTAMP)"),
+        }
     )
 
 
