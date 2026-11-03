@@ -52,6 +52,12 @@ jobs:
         run: |
           ruff format --check src tests
 
+      - name: Run dlt-doctor Quality Gate
+        uses: MsMansiDhruv/dlt-doctor@v0.4.0
+        with:
+          path: "src/pipelines/orders_pipeline.py"
+          format: "text" 
+
       - name: Run unit tests
         run: |
           pytest -v
