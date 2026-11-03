@@ -221,3 +221,4 @@ __marimo__/
 
 # Binary build and export artifacts
 *.pdf
+uv.lock
