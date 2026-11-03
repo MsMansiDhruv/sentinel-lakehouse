@@ -52,7 +52,7 @@ class LocalDeterministicEmbeddings(EmbeddingProvider):
         # Token and bigram hashed projections
         tokens = cleaned.split()
         for i, token in enumerate(tokens):
-            h = int(hashlib.md5(token.encode()).hexdigest(), 16)
+            h = int(hashlib.sha256(token.encode()).hexdigest(), 16)
             idx = h % self._dim
             sign = 1.0 if ((h >> 4) & 1) == 0 else -1.0
             vec[idx] += sign * (1.0 + 1.0 / (1.0 + i * 0.1))
@@ -67,7 +67,7 @@ class LocalDeterministicEmbeddings(EmbeddingProvider):
         # Character trigrams for morphological similarity
         for j in range(len(cleaned) - 2):
             tri = cleaned[j : j + 3]
-            h_tri = int(hashlib.sha1(tri.encode()).hexdigest(), 16)
+            h_tri = int(hashlib.sha256(tri.encode()).hexdigest(), 16)
             idx_tri = h_tri % self._dim
             vec[idx_tri] += 0.35 if ((h_tri >> 2) & 1) == 0 else -0.35
 
@@ -116,8 +116,13 @@ class DatabricksEmbeddings(EmbeddingProvider):
             method="POST",
         )
 
+        if not (
+            self.endpoint_url.startswith("https://")
+            or self.endpoint_url.startswith("http://")
+        ):
+            raise ValueError(f"Invalid protocol in endpoint_url: {self.endpoint_url}")
         try:
-            with urllib.request.urlopen(req, timeout=self.timeout_seconds) as response:
+            with urllib.request.urlopen(req, timeout=self.timeout_seconds) as response:  # nosec B310
                 body = json.loads(response.read().decode("utf-8"))
                 # Handle standard Databricks Foundation Model embeddings payload
                 if "data" in body:

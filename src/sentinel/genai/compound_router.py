@@ -168,7 +168,7 @@ class CompoundQueryRouter:
         """Generate a basic governed SELECT query over the first registered Gold table."""
         if self.semantic_compiler._tables:
             table_name = next(iter(self.semantic_compiler._tables.keys()))
-            return f"SELECT * FROM {table_name} LIMIT 100"
+            return f"SELECT * FROM {table_name} LIMIT 100"  # nosec B608
         return "SELECT 1"
 
     def _synthesize_response(
