@@ -198,6 +198,26 @@ Sentinel was benchmarked against traditional partitioning strategies using 10M+ 
 
 ---
 
+## Sentinel-GenAI: Enterprise Hybrid RAG & Genie Semantic Engine
+
+Sentinel-GenAI extends the Lakehouse into a governed **Compound AI System** by unifying Databricks Genie semantic spaces, Mosaic AI Vector Search, and Compound Query Routing.
+
+### The Enterprise GenAI Challenge
+Enterprise questions demand both numerical calculations and unstructured policy interpretation:
+- Traditional document search cannot compute numerical aggregations across millions of Delta Lake records.
+- Traditional Text-to-SQL cannot interpret unstructured data contracts, SLA penalty clauses, or compliance policies.
+
+### Architecture & Key Capabilities
+- **Structure-Aware Document Chunker** (`src/sentinel/genai/chunker.py`): Preserves Markdown tables and SQL code blocks intact without splitting structural boundaries.
+- **Hybrid Mosaic AI Vector Search** (`src/sentinel/genai/vector_search.py`): Dense vector cosine similarity combined with sparse BM25 lexical retrieval merged via Reciprocal Rank Fusion (RRF).
+- **Databricks Genie Semantic Compiler** (`src/sentinel/genai/genie_semantic.py`): Generates table annotations, column constraints, join graphs, and a verified **Trusted SQL Catalog** with safety validation to prevent metric hallucinations.
+- **Compound Query Router & Evaluator** (`src/sentinel/genai/compound_router.py`, `evaluator.py`): Intelligently classifies query intent (`analytical`, `policy_retrieval`, `hybrid`), executes parallel retrieval across SQL and Vector indices, and generates grounded, citation-backed responses validated by numerical guardrails.
+
+### Interactive Demonstration Notebook
+Open `notebooks/14_sentinel_genai_hybrid_rag.ipynb` in Databricks for an end-to-end interactive demo of hybrid RAG and evaluation scorecards.
+
+---
+
 ## 🧪 Quickstart & Test Suite
 
 ### Clone and Run Tests Locally
@@ -205,7 +225,7 @@ Sentinel was benchmarked against traditional partitioning strategies using 10M+ 
 git clone https://github.com/MsMansiDhruv/sentinel-lakehouse.git
 cd sentinel-lakehouse
 
-# Run full pytest suite (22 unit tests covering SLA gate, window contiguity, and reconciler)
+# Run full pytest suite (58 unit tests covering SLA gates, reconciler, and GenAI hybrid RAG)
 python -m pytest
 ```
 
@@ -222,5 +242,5 @@ Open `notebooks/13_gold_quality_accelerator_demo.ipynb` in Databricks for an end
 ---
 
 <div align="center">
-  <sub>Built with ❤️ by <a href="https://github.com/MsMansiDhruv">Mansi Dhruv</a> • Production Databricks &amp; Delta Lake Engineering</sub>
+  <sub>Built by <a href="https://github.com/MsMansiDhruv">Mansi Dhruv</a> • Production Databricks &amp; Delta Lake Engineering</sub>
 </div>
