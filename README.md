@@ -218,6 +218,33 @@ Open `notebooks/14_sentinel_genai_hybrid_rag.ipynb` in Databricks for an end-to-
 
 ---
 
+## AutoHeal-DE: Autonomous AI Agents for Data Engineering
+
+AutoHeal-DE is an autonomous triage and remediation agent system designed to detect, root-cause, and heal Lakehouse pipeline failures and data anomalies without manual intervention.
+
+### Capabilities
+- **Autonomous Incident Triage** (`src/sentinel/autoheal/incident.py`): Structured telemetry capturing schema drift, SLA breaches, partition contiguity gaps, null threshold violations, and query syntax failures.
+- **Deterministic Tool Calling Registry** (`src/sentinel/autoheal/tools.py`):
+  - Delta Lake commit log inspection for anomalous file write patterns and schema mutation tracking.
+  - SQLGlot AST query rewriter for dynamic column aliasing and syntax healing.
+  - Automated Lakeflow quarantine filter rule generation.
+  - Surgical Delta Lake MERGE reconciler with partition pruning.
+- **Remediation State Machine** (`src/sentinel/autoheal/agent.py`): Produces structured `RemediationPlan` artifacts with confidence scoring and automated execution safety gates.
+
+---
+
+## Genie-Bench: Enterprise Databricks Genie Evaluation & Semantic Layer
+
+Genie-Bench provides continuous integration, regression testing, and semantic accuracy benchmarking for Databricks AI/BI Genie spaces and Text-to-SQL models.
+
+### Capabilities
+- **Genie Semantic Layer Compiler** (`src/sentinel/genie_bench/space.py`): Compiles dimensions, calculated measures, foreign-key join paths, and curated instructions into Databricks AI/BI space payloads and idempotent Unity Catalog DDL statements (`COMMENT ON TABLE / COLUMN`).
+- **SQLGlot AST Semantic Matcher** (`src/sentinel/genie_bench/ast_matcher.py`): Performs structural AST equivalence comparison invariant to column alias naming, table qualification prefixes, projection ordering, and boolean commutative logic.
+- **Benchmark Test Suite Runner** (`src/sentinel/genie_bench/benchmark.py`): Multi-tier test suite covering simple aggregations, multi-table joins, window functions, and subquery/CTE patterns.
+- **CI/CD Quality Gate Reporter** (`src/sentinel/genie_bench/reporter.py`): Generates executive Markdown scorecards and enforces strict CI/CD accuracy and latency thresholds before production semantic space deployment.
+
+---
+
 ## 🧪 Quickstart & Test Suite
 
 ### Clone and Run Tests Locally
@@ -225,7 +252,7 @@ Open `notebooks/14_sentinel_genai_hybrid_rag.ipynb` in Databricks for an end-to-
 git clone https://github.com/MsMansiDhruv/sentinel-lakehouse.git
 cd sentinel-lakehouse
 
-# Run full pytest suite (58 unit tests covering SLA gates, reconciler, and GenAI hybrid RAG)
+# Run full pytest suite (76 unit tests covering Gold accelerators, GenAI hybrid RAG, AutoHeal-DE, and Genie-Bench)
 python -m pytest
 ```
 
