@@ -100,4 +100,3 @@ def test_matcher_cte_predicate_mismatch() -> None:
     res = matcher.compare(gen, gt)
     assert res.is_equivalent is False
     assert any("Where conditions mismatch" in d for d in res.structural_differences)
-
