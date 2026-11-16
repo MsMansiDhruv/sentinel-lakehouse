@@ -148,10 +148,20 @@ class SQLAstMatcher:
             col.set("table", None)
         return copied
 
+    def _extract_cte_names(self, ast: exp.Expression) -> set[str]:
+        """Extract all CTE alias names defined in the query to isolate physical tables."""
+        cte_names: set[str] = set()
+        for cte in ast.find_all(exp.CTE):
+            if cte.alias:
+                cte_names.add(cte.alias.lower())
+        return cte_names
+
     def _extract_tables(self, ast: exp.Expression) -> set[str]:
+        """Extract physical base tables, excluding internal CTE aliases."""
+        cte_names = self._extract_cte_names(ast)
         tables: set[str] = set()
         for t in ast.find_all(exp.Table):
-            if t.name:
+            if t.name and t.name.lower() not in cte_names:
                 tables.add(t.name.lower())
         return tables
 
